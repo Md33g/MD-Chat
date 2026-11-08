@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>شات مباشر</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+    background:#0f172a;color:#e2e8f0;overflow:hidden;
+  }
+  .hidden{display:none!important}
+  button{font-family:inherit;cursor:pointer;border:0}
+
+  /* ===== شاشة الدخول ===== */
+  .login{
+    height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:radial-gradient(1200px 600px at 50% -10%,#1e3a8a55,transparent),#0f172a;
+  }
+  .card{
+    width:100%;max-width:380px;background:#16213a;border:1px solid #263352;
+    border-radius:20px;padding:26px 22px;box-shadow:0 20px 50px #0008;
+  }
+  .card h1{margin:0 0 6px;font-size:22px;text-align:center}
+  .hint{margin:0 0 20px;font-size:13px;line-height:1.7;color:#94a3b8;text-align:center}
+  .card input{
+    width:100%;padding:13px 14px;margin-bottom:12px;border-radius:12px;
+    border:1px solid #2d3a5c;background:#0e1729;color:#e2e8f0;font-size:15px;outline:none;
+  }
+  .card input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px #3b82f633}
+  .card button{
+    width:100%;padding:14px;border-radius:12px;font-size:16px;font-weight:700;
+    background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;
+    transition:.15s;
+  }
+  .card button:active{transform:scale(.98)}
+
+  /* ===== الشات ===== */
+  .chat{height:100dvh;display:flex;flex-direction:column}
+  header{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:12px 16px;background:#16213a;border-bottom:1px solid #24304d;
+    padding-top:calc(12px + env(safe-area-inset-top));
+  }
+  .room{font-weight:700;font-size:15px}
+  .status{font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:6px;margin-top:2px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#ef4444;flex:none}
+  .dot.on{background:#22c55e;box-shadow:0 0 8px #22c55e}
+  .ghost{
+    background:#233150;color:#cbd5e1;padding:8px 14px;border-radius:10px;font-size:13px;
+  }
+  .ghost:active{background:#2d3d63}
+
+  .messages{
+    flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;
+    scroll-behavior:smooth;
+  }
+  .msg{display:flex;max-width:82%}
+  .msg.mine{align-self:flex-start;justify-content:flex-start}
+  .msg.other{align-self:flex-end;justify-content:flex-end}
+  .bubble{
+    padding:9px 13px;border-radius:16px;position:relative;
+    font-size:15px;line-height:1.55;word-wrap:break-word;overflow-wrap:anywhere;
+    animation:pop .18s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
+  .mine .bubble{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;border-bottom-left-radius:4px}
+  .other .bubble{background:#1e2a44;color:#e2e8f0;border-bottom-right-radius:4px}
+  .author{font-size:12px;font-weight:700;color:#7dd3fc;margin-bottom:3px}
+  .time{font-size:10px;opacity:.6;margin-top:4px;text-align:left;direction:ltr}
+  .sys{align-self:center;font-size:12px;color:#94a3b8;background:#1a2540;padding:5px 12px;border-radius:20px}
+
+  .composer{
+    display:flex;gap:8px;padding:10px 12px;background:#16213a;border-top:1px solid #24304d;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  }
+  .composer input{
+    flex:1;padding:13px 16px;border-radius:24px;border:1px solid #2d3a5c;
+    background:#0e1729;color:#e2e8f0;font-size:15px;outline:none;
+  }
+  .composer input:focus{border-color:#3b82f6}
+  .composer button{
+    width:48px;height:48px;border-radius:50%;flex:none;font-size:19px;
+    background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;display:grid;place-items:center;
+  }
+  .composer button:active{transform:scale(.94)}
+  .composer button:disabled{opacity:.5}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-thumb{background:#2d3a5c;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- شاشة الدخول -->
+<div id="login" class="login">
+  <div class="card">
+    <h1>💬 شات مباشر</h1>
+    <p class="hint">اكتب اسمك واسم الغرفة، وابعت اسم الغرفة لأصحابك عشان يدخلوا معاك.</p>
+    <input id="nameInput" placeholder="اسمك" maxlength="30" autocomplete="off">
+    <input id="roomInput" placeholder="اسم الغرفة (مثال: ahmed-chat-2026)" maxlength="40" autocomplete="off">
+    <button id="enterBtn">دخول</button>
+  </div>
+</div>
+
+<!-- الشات -->
+<div id="chat" class="chat hidden">
+  <header>
+    <div>
+      <div id="roomLabel" class="room"></div>
+      <div class="status"><span id="dot" class="dot"></span><span id="statusText">جاري الاتصال…</span></div>
+    </div>
+    <button id="leaveBtn" class="ghost">خروج</button>
+  </header>
+  <main id="messages" class="messages"></main>
+  <form id="composer" class="composer">
+    <input id="msgInput" placeholder="اكتب رسالة…" autocomplete="off" maxlength="500">
+    <button type="submit" id="sendBtn" aria-label="إرسال">➤</button>
+  </form>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ====== إعدادات السيرفر (ntfy.sh مجاني ومفتوح بدون تسجيل) ======
+  const NTFY    = "https://ntfy.sh";
+  const NTFY_WS = "wss://ntfy.sh";
+  const LS_KEY  = "simple_chat_cfg_v1";
+
+  // ====== عناصر الصفحة ======
+  const $ = s => document.querySelector(s);
+  const loginEl   = $("#login");
+  const chatEl    = $("#chat");
+  const nameInput = $("#nameInput");
+  const roomInput = $("#roomInput");
+  const enterBtn  = $("#enterBtn");
+  const leaveBtn  = $("#leaveBtn");
+  const roomLabel = $("#roomLabel");
+  const dot       = $("#dot");
+  const statusTxt = $("#statusText");
+  const messagesEl= $("#messages");
+  const msgInput  = $("#msgInput");
+  const sendBtn   = $("#sendBtn");
+  const composer  = $("#composer");
+
+  // ====== الحالة ======
+  let name = "", room = "";
+  let ws = null, retry = 0, reconnectTimer = null, closing = false;
+  const seen = new Set();
+
+  // ====== أدوات ======
+  const esc = s => String(s).replace(/[&<>"']/g, c => (
+    { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]
+  ));
+
+  // نسمح فقط بالحروف والأرقام و - و _ (شرط مواضيع ntfy)
+  const cleanTopic = t => t.trim().replace(/[^A-Za-z0-9_-]/g, "-").slice(0, 64);
+
+  function nearBottom() {
+    return messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 120;
+  }
+  function scrollBottom() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function setStatus(on) {
+    dot.classList.toggle("on", on);
+    statusTxt.textContent = on ? "متصل" : "غير متصل — بيحاول يعيد الاتصال…";
+  }
+
+  function addSystem(text) {
+    const el = document.createElement("div");
+    el.className = "sys";
+    el.textContent = text;
+    messagesEl.appendChild(el);
+    scrollBottom();
+  }
+
+  // ====== عرض رسالة ======
+  function addMessage(m) {
+    if (!m || m.event !== "message" || !m.id) return;
+    if (seen.has(m.id)) return;
+    seen.add(m.id);
+
+    const mine   = (m.title || "") === name;
+    const author = m.title || "مجهول";
+    const ts     = (m.time || Math.floor(Date.now() / 1000)) * 1000;
+    const time   = new Date(ts).toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" });
+
+    const stick = nearBottom();
+
+    const wrap = document.createElement("div");
+    wrap.className = "msg " + (mine ? "mine" : "other");
+    wrap.innerHTML =
+      '<div class="bubble">' +
+        (mine ? "" : '<div class="author">' + esc(author) + "</div>") +
+        '<div class="text">' + esc(m.message || "") + "</div>" +
+        '<div class="time">' + time + "</div>" +
+      "</div>";
+
+    messagesEl.appendChild(wrap);
+    if (stick) scrollBottom();
+  }
+
+  // ====== تحميل الرسائل القديمة (آخر 12 ساعة) ======
+  async function loadHistory() {
+    try {
+      const res = await fetch(
+        NTFY + "/" + encodeURIComponent(room) + "/json?poll=1&since=12h",
+        { cache: "no-store" }
+      );
+      if (!res.ok) return;
+      const text = await res.text();
+      text.split("\n").forEach(line => {
+        if (!line.trim()) return;
+        try { addMessage(JSON.parse(line)); } catch (_) {}
+      });
+      scrollBottom();
+    } catch (_) { /* تجاهل */ }
+  }
+
+  // ====== الاتصال بالـ WebSocket ======
+  function connect() {
+    if (closing) return;
+    clearTimeout(reconnectTimer);
+
+    try {
+      ws = new WebSocket(NTFY_WS + "/" + encodeURIComponent(room) + "/ws");
+    } catch (_) {
+      scheduleReconnect();
+      return;
+    }
+
+    ws.onopen = () => { retry = 0; setStatus(true); };
+
+    ws.onmessage = ev => {
+      try {
+        const data = JSON.parse(ev.data);
+        if (data.event === "message") addMessage(data);
+        if (data.event === "open") setStatus(true);
+      } catch (_) {}
+    };
+
+    ws.onclose = () => { setStatus(false); scheduleReconnect(); };
+    ws.onerror = () => { setStatus(false); };
+  }
+
+  function scheduleReconnect() {
+    if (closing) return;
+    clearTimeout(reconnectTimer);
+    const delay = Math.min(30000, 1000 * Math.pow(2, retry++));
+    reconnectTimer = setTimeout(connect, delay);
+  }
+
+  // ====== إرسال رسالة ======
+  async function sendMessage(text) {
+    sendBtn.disabled = true;
+    try {
+      const res = await fetch(NTFY, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: room, message: text, title: name })
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+    } catch (e) {
+      addSystem("⚠️ ماقدرتش أرسل الرسالة، جرّب تاني");
+      msgInput.value = text;
+    } finally {
+      sendBtn.disabled = false;
+      msgInput.focus();
+    }
+  }
+
+  // ====== بدء الشات ======
+  function startChat() {
+    loginEl.classList.add("hidden");
+    chatEl.classList.remove("hidden");
+    roomLabel.textContent = "# " + room;
+    messagesEl.innerHTML = "";
+    seen.clear();
+    closing = false;
+    setStatus(false);
+
+    loadHistory();
+    connect();
+
+    setTimeout(() => msgInput.focus(), 100);
+  }
+
+  // ====== أحداث ======
+  enterBtn.addEventListener("click", () => {
+    name = nameInput.value.trim() || "مستخدم";
+    room = cleanTopic(roomInput.value || "");
+    if (!room) {
+      roomInput.focus();
+      roomInput.style.borderColor = "#ef4444";
+      return;
+    }
+    localStorage.setItem(LS_KEY, JSON.stringify({ name, room }));
+    startChat();
+  });
+
+  roomInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") enterBtn.click();
+  });
+
+  composer.addEventListener("submit", e => {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (!text) return;
+    msgInput.value = "";
+    sendMessage(text);
+  });
+
+  leaveBtn.addEventListener("click", () => {
+    closing = true;
+    clearTimeout(reconnectTimer);
+    if (ws) { try { ws.close(); } catch (_) {} ws = null; }
+    chatEl.classList.add("hidden");
+    loginEl.classList.remove("hidden");
+    nameInput.focus();
+  });
+
+  // استرجاع آخر إعدادات
+  (() => {
+    try {
+      const cfg = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+      if (cfg) {
+        nameInput.value = cfg.name || "";
+        roomInput.value = cfg.room || "";
+      }
+    } catch (_) {}
+    nameInput.focus();
+  })();
+
+  // إعادة الاتصال لما الصفحة ترجع للواجهة
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && !closing && chatEl.classList.contains("hidden") === false) {
+      if (!ws || ws.readyState > 1) { retry = 0; connect(); }
+    }
+  });
+})();
+</script>
+</body>
+</html>
