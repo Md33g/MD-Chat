@@ -3,121 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0f172a">
-<title>شات مباشر</title>
+<meta name="theme-color" content="#000000">
+<meta name="description" content="MD Chat — محادثات فورية بثيم AMOLED أزرق فاخر">
+<title>MD Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;margin:0}
-  body{
-    font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
-    background:#0f172a;color:#e2e8f0;overflow:hidden;
-  }
-  .hidden{display:none!important}
-  button{font-family:inherit;cursor:pointer;border:0}
+/* ================= Design tokens ================= */
+:root{
+  --bg:#000000;
+  --surface:#0a0c11;
+  --surface-2:#0f131c;
+  --line:rgba(148,163,184,.10);
+  --line-blue:rgba(59,130,246,.22);
+  --text:#eef2f8;
+  --muted:#8b97ad;
+  --blue:#3b82f6;
+  --blue-2:#2563eb;
+  --blue-3:#1d4ed8;
+  --cyan:#38bdf8;
+  --green:#22c55e;
+  --radius:18px;
+  --glow-sm:0 0 18px rgba(59,130,246,.32);
+  --glow-md:0 8px 30px -6px rgba(59,130,246,.55);
+  --font:"Cairo","Inter",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+}
 
-  /* ===== شاشة الدخول ===== */
-  .login{
-    height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;
-    background:radial-gradient(1200px 600px at 50% -10%,#1e3a8a55,transparent),#0f172a;
-  }
-  .card{
-    width:100%;max-width:380px;background:#16213a;border:1px solid #263352;
-    border-radius:20px;padding:26px 22px;box-shadow:0 20px 50px #0008;
-  }
-  .card h1{margin:0 0 6px;font-size:22px;text-align:center}
-  .hint{margin:0 0 20px;font-size:13px;line-height:1.7;color:#94a3b8;text-align:center}
-  .card input{
-    width:100%;padding:13px 14px;margin-bottom:12px;border-radius:12px;
-    border:1px solid #2d3a5c;background:#0e1729;color:#e2e8f0;font-size:15px;outline:none;
-  }
-  .card input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px #3b82f633}
-  .card button{
-    width:100%;padding:14px;border-radius:12px;font-size:16px;font-weight:700;
-    background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;
-    transition:.15s;
-  }
-  .card button:active{transform:scale(.98)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input{font-family:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#1b2436;border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:#27334d}
 
-  /* ===== الشات ===== */
-  .chat{height:100dvh;display:flex;flex-direction:column}
-  header{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    padding:12px 16px;background:#16213a;border-bottom:1px solid #24304d;
-    padding-top:calc(12px + env(safe-area-inset-top));
-  }
-  .room{font-weight:700;font-size:15px}
-  .status{font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:6px;margin-top:2px}
-  .dot{width:8px;height:8px;border-radius:50%;background:#ef4444;flex:none}
-  .dot.on{background:#22c55e;box-shadow:0 0 8px #22c55e}
-  .ghost{
-    background:#233150;color:#cbd5e1;padding:8px 14px;border-radius:10px;font-size:13px;
-  }
-  .ghost:active{background:#2d3d63}
+/* ================= Login screen ================= */
+.login{
+  position:relative;
+  height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px 20px;
+  background:
+    radial-gradient(900px 520px at 50% -18%, rgba(37,99,235,.22), transparent 70%),
+    radial-gradient(620px 420px at 92% 112%, rgba(56,189,248,.10), transparent 70%),
+    #000;
+  overflow:hidden;
+}
+.aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.aurora span{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:.45;
+  animation:drift 18s ease-in-out infinite alternate;
+}
+.aurora span:nth-child(1){width:340px;height:340px;top:-90px;right:-60px;background:rgba(37,99,235,.55)}
+.aurora span:nth-child(2){width:300px;height:300px;bottom:-110px;left:-70px;background:rgba(56,189,248,.35);animation-delay:-7s}
+@keyframes drift{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(-24px,26px,0) scale(1.12)}
+}
 
-  .messages{
-    flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;
-    scroll-behavior:smooth;
-  }
-  .msg{display:flex;max-width:82%}
-  .msg.mine{align-self:flex-start;justify-content:flex-start}
-  .msg.other{align-self:flex-end;justify-content:flex-end}
-  .bubble{
-    padding:9px 13px;border-radius:16px;position:relative;
-    font-size:15px;line-height:1.55;word-wrap:break-word;overflow-wrap:anywhere;
-    animation:pop .18s ease-out;
-  }
-  @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
-  .mine .bubble{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;border-bottom-left-radius:4px}
-  .other .bubble{background:#1e2a44;color:#e2e8f0;border-bottom-right-radius:4px}
-  .author{font-size:12px;font-weight:700;color:#7dd3fc;margin-bottom:3px}
-  .time{font-size:10px;opacity:.6;margin-top:4px;text-align:left;direction:ltr}
-  .sys{align-self:center;font-size:12px;color:#94a3b8;background:#1a2540;padding:5px 12px;border-radius:20px}
+.login-card{
+  position:relative;z-index:1;
+  width:100%;max-width:400px;
+  padding:30px 24px 22px;
+  border-radius:26px;
+  background:linear-gradient(180deg, rgba(16,20,30,.92), rgba(6,8,12,.95));
+  border:1px solid rgba(59,130,246,.16);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+  box-shadow:0 40px 90px -30px #000, 0 0 60px -30px rgba(59,130,246,.6);
+  animation:cardIn .5s cubic-bezier(.2,.8,.25,1) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
 
-  .composer{
-    display:flex;gap:8px;padding:10px 12px;background:#16213a;border-top:1px solid #24304d;
-    padding-bottom:calc(10px + env(safe-area-inset-bottom));
-  }
-  .composer input{
-    flex:1;padding:13px 16px;border-radius:24px;border:1px solid #2d3a5c;
-    background:#0e1729;color:#e2e8f0;font-size:15px;outline:none;
-  }
-  .composer input:focus{border-color:#3b82f6}
-  .composer button{
-    width:48px;height:48px;border-radius:50%;flex:none;font-size:19px;
-    background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;display:grid;place-items:center;
-  }
-  .composer button:active{transform:scale(.94)}
-  .composer button:disabled{opacity:.5}
-  ::-webkit-scrollbar{width:6px}
-  ::-webkit-scrollbar-thumb{background:#2d3a5c;border-radius:3px}
+/* gradient hairline border */
+.login-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(150deg, rgba(59,130,246,.65), rgba(56,189,248,.12) 42%, transparent 72%);
+  -webkit-mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;
+}
+
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.logo{
+  width:58px;height:58px;flex:none;border-radius:18px;
+  display:grid;place-items:center;
+  font-weight:800;font-size:19px;letter-spacing:.5px;color:#fff;
+  background:linear-gradient(140deg,#60a5fa,#2563eb 55%,#1d4ed8);
+  box-shadow:0 12px 30px -10px rgba(37,99,235,.9), inset 0 1px 0 rgba(255,255,255,.35);
+  position:relative;overflow:hidden;
+}
+.logo::after{
+  content:"";position:absolute;inset:-40% -60%;
+  background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);
+  transform:translateX(-60%) rotate(0deg);
+  animation:shine 5.5s ease-in-out infinite;
+}
+@keyframes shine{0%,72%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+
+.brand-text h1{
+  margin:0;font-size:23px;font-weight:800;letter-spacing:-.3px;
+  background:linear-gradient(90deg,#ffffff,#bfdbfe 55%,#60a5fa);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.brand-text p{margin:3px 0 0;font-size:12px;color:var(--muted);letter-spacing:.2px}
+
+.field{position:relative;margin-bottom:12px}
+.field svg{
+  position:absolute;inset-inline-start:15px;top:50%;transform:translateY(-50%);
+  width:19px;height:19px;color:#5c6b85;pointer-events:none;transition:color .2s;
+}
+.field input{
+  width:100%;
+  padding:15px 46px 15px 16px;
+  padding-inline-start:46px;padding-inline-end:16px;
+  border-radius:14px;
+  font-size:16px;
+  color:var(--text);
+  background:rgba(255,255,255,.028);
+  border:1px solid rgba(148,163,184,.14);
+  outline:none;
+  transition:border-color .18s, box-shadow .18s, background .18s;
+}
+.field input::placeholder{color:#5c6b85}
+.field input:focus{
+  background:rgba(59,130,246,.06);
+  border-color:rgba(59,130,246,.65);
+  box-shadow:0 0 0 4px rgba(59,130,246,.13), var(--glow-sm);
+}
+.field input:focus + svg,
+.field:focus-within svg{color:var(--cyan)}
+
+.primary{
+  width:100%;height:54px;margin-top:6px;
+  border-radius:15px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  font-size:16px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,#4f8ef7,#2563eb 55%,#1d4ed8);
+  box-shadow:0 14px 34px -12px rgba(37,99,235,.95), inset 0 1px 0 rgba(255,255,255,.28);
+  transition:transform .16s, box-shadow .2s, filter .2s;
+  position:relative;overflow:hidden;
+}
+.primary svg{width:19px;height:19px}
+.primary:hover{filter:brightness(1.07);box-shadow:0 18px 42px -12px rgba(37,99,235,1), inset 0 1px 0 rgba(255,255,255,.3)}
+.primary:active{transform:scale(.985)}
+.primary::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 45%,rgba(255,255,255,.22) 50%,transparent 55%);
+  transform:translateX(-120%);
+  transition:transform .7s ease;
+}
+.primary:hover::after{transform:translateX(120%)}
+
+.footnote{
+  margin:15px 0 0;text-align:center;font-size:11.5px;line-height:1.7;color:#64708a;
+}
+
+.shake{animation:shake .35s}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
+
+/* ================= Chat screen ================= */
+.chat{position:relative;height:100dvh;display:flex;flex-direction:column;background:#000}
+
+.topbar{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;
+  padding-top:calc(12px + env(safe-area-inset-top));
+  background:rgba(6,8,12,.88);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+  z-index:5;
+}
+.icon-btn{
+  width:40px;height:40px;flex:none;border-radius:12px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(148,163,184,.12);
+  color:#b9c6dc;
+  transition:.16s;
+}
+.icon-btn:active{transform:scale(.94);background:rgba(255,255,255,.08)}
+.icon-btn svg{width:20px;height:20px}
+
+.room-info{display:flex;align-items:center;gap:11px;min-width:0;flex:1}
+.avatar{
+  width:42px;height:42px;flex:none;border-radius:14px;
+  display:grid;place-items:center;
+  font-weight:800;font-size:16px;color:#fff;text-transform:uppercase;
+  background:linear-gradient(140deg,#60a5fa,#2563eb 60%,#1e40af);
+  box-shadow:0 6px 18px -6px rgba(37,99,235,.95), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.room-name{
+  font-size:15px;font-weight:800;letter-spacing:-.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.status{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-top:2px}
+.dot{position:relative;width:7px;height:7px;border-radius:50%;background:#ef4444;flex:none;transition:.2s}
+.dot.on{background:var(--green);box-shadow:0 0 10px rgba(34,197,94,.9)}
+.dot.on::after{
+  content:"";position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid rgba(34,197,94,.55);
+  animation:pulse 2s ease-out infinite;
+}
+@keyframes pulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.8);opacity:0}}
+
+/* ---------- messages ---------- */
+.messages{
+  flex:1;overflow-y:auto;overscroll-behavior:contain;
+  padding:16px 14px 8px;
+  display:flex;flex-direction:column;gap:8px;
+  scroll-behavior:smooth;
+  background:radial-gradient(760px 320px at 50% 0%, rgba(37,99,235,.075), transparent 72%);
+}
+
+.msg{display:flex;max-width:80%;animation:rise .22s ease-out both}
+.msg.mine{align-self:flex-end;justify-content:flex-end}
+.msg.other{align-self:flex-start;justify-content:flex-start}
+.msg.grouped{margin-top:-4px}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+
+.bubble{
+  padding:9px 13px 8px;
+  border-radius:18px;
+  font-size:14.5px;line-height:1.6;
+  word-wrap:break-word;overflow-wrap:anywhere;
+  position:relative;
+}
+.mine .bubble{
+  color:#fff;
+  background:linear-gradient(140deg,#3b82f6,#2563eb 55%,#1d4ed8);
+  border-bottom-left-radius:6px;
+  box-shadow:0 8px 24px -10px rgba(37,99,235,.85), inset 0 1px 0 rgba(255,255,255,.18);
+}
+.other .bubble{
+  color:#e6edf8;
+  background:linear-gradient(180deg,#10151f,#0c1018);
+  border:1px solid rgba(148,163,184,.10);
+  border-bottom-right-radius:6px;
+  box-shadow:0 6px 18px -14px #000;
+}
+.author{
+  font-size:12px;font-weight:800;color:#7dd3fc;
+  margin-bottom:3px;letter-spacing:.1px;
+}
+.time{
+  display:block;margin-top:4px;
+  font-size:10px;font-weight:500;
+  opacity:.55;text-align:left;
+  font-family:"Inter",var(--font);
+  letter-spacing:.3px;
+}
+
+.day{
+  align-self:center;display:flex;align-items:center;gap:10px;
+  width:100%;margin:10px 0 2px;
+  font-size:11px;font-weight:600;color:#64708a;
+}
+.day::before,.day::after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(148,163,184,.16),transparent);
+}
+.day span{
+  padding:4px 12px;border-radius:99px;
+  background:rgba(59,130,246,.08);
+  border:1px solid rgba(59,130,246,.14);
+}
+
+.sys{
+  align-self:center;max-width:88%;text-align:center;
+  font-size:11.5px;color:#93a2ba;
+  background:rgba(59,130,246,.07);
+  border:1px solid rgba(59,130,246,.14);
+  padding:6px 14px;border-radius:99px;
+}
+
+.empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;text-align:center;padding:30px 20px;
+  animation:rise .4s ease-out both;
+}
+.empty-ic{
+  width:74px;height:74px;border-radius:24px;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 30%, rgba(59,130,246,.22), rgba(59,130,246,.05));
+  border:1px solid rgba(59,130,246,.22);
+  box-shadow:0 0 40px -12px rgba(59,130,246,.7), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.empty-ic svg{width:32px;height:32px;color:#60a5fa}
+.empty h3{margin:0;font-size:16px;font-weight:800;color:#dbe6f5}
+.empty p{margin:0;font-size:12.5px;color:#64708a;line-height:1.7;max-width:240px}
+
+/* ---------- scroll to bottom ---------- */
+.scroll-btn{
+  position:absolute;left:16px;
+  bottom:calc(86px + env(safe-area-inset-bottom));
+  width:42px;height:42px;border-radius:50%;
+  display:grid;place-items:center;
+  background:rgba(15,19,28,.92);
+  border:1px solid rgba(59,130,246,.28);
+  color:#bfdbfe;
+  box-shadow:0 10px 26px -10px #000, var(--glow-sm);
+  backdrop-filter:blur(10px);
+  z-index:6;
+  transition:opacity .2s, transform .2s;
+}
+.scroll-btn svg{width:20px;height:20px}
+.scroll-btn:active{transform:scale(.92)}
+
+/* ---------- composer ---------- */
+.composer{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  background:rgba(6,8,12,.92);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);
+}
+.input-wrap{flex:1;position:relative;display:flex;align-items:center}
+.input-wrap input{
+  width:100%;
+  padding:14px 18px;
+  border-radius:99px;
+  font-size:16px;color:var(--text);
+  background:#0a0d14;
+  border:1px solid rgba(148,163,184,.13);
+  outline:none;
+  transition:border-color .18s, box-shadow .18s, background .18s;
+}
+.input-wrap input::placeholder{color:#5c6b85}
+.input-wrap input:focus{
+  background:#0c111a;
+  border-color:rgba(59,130,246,.6);
+  box-shadow:0 0 0 3px rgba(59,130,246,.12), var(--glow-sm);
+}
+.send{
+  width:50px;height:50px;flex:none;border-radius:50%;
+  display:grid;place-items:center;
+  color:#fff;
+  background:linear-gradient(140deg,#4f8ef7,#2563eb 60%,#1d4ed8);
+  box-shadow:0 12px 28px -10px rgba(37,99,235,.95), inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .16s, filter .2s, opacity .2s;
+}
+.send svg{width:21px;height:21px;transform:scaleX(-1);margin-inline-start:2px}
+.send:hover{filter:brightness(1.08)}
+.send:active{transform:scale(.92)}
+.send:disabled{opacity:.45;box-shadow:none}
+
+@media (max-width:360px){
+  .brand-text h1{font-size:21px}
+  .bubble{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
 
-<!-- شاشة الدخول -->
+<!-- ================= شاشة الدخول ================= -->
 <div id="login" class="login">
-  <div class="card">
-    <h1>💬 شات مباشر</h1>
-    <p class="hint">اكتب اسمك واسم الغرفة، وابعت اسم الغرفة لأصحابك عشان يدخلوا معاك.</p>
-    <input id="nameInput" placeholder="اسمك" maxlength="30" autocomplete="off">
-    <input id="roomInput" placeholder="اسم الغرفة (مثال: ahmed-chat-2026)" maxlength="40" autocomplete="off">
-    <button id="enterBtn">دخول</button>
+  <div class="aurora"><span></span><span></span></div>
+
+  <div class="login-card">
+    <div class="brand">
+      <div class="logo">MD</div>
+      <div class="brand-text">
+        <h1>MD Chat</h1>
+        <p>محادثات فورية · سريعة · بدون تسجيل</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <input id="nameInput" placeholder="اسمك" maxlength="30" autocomplete="off" enterkeyhint="next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="3.6"/><path d="M4.6 20c1.2-3.7 4-5.6 7.4-5.6s6.2 1.9 7.4 5.6"/>
+      </svg>
+    </div>
+
+    <div class="field">
+      <input id="roomInput" placeholder="اسم الغرفة" maxlength="40" autocomplete="off" enterkeyhint="go">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M9.5 4.5L7.2 19.5M16.8 4.5l-2.3 15M4.5 9h15.2M3.5 15h15.2"/>
+      </svg>
+    </div>
+
+    <button id="enterBtn" class="primary">
+      دخول المحادثة
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 6l-6 6 6 6"/>
+      </svg>
+    </button>
+
+    <p class="footnote">اكتب اسم الغرفة وشاركه مع أصدقائك للانضمام إليك</p>
   </div>
 </div>
 
-<!-- الشات -->
+<!-- ================= الشات ================= -->
 <div id="chat" class="chat hidden">
-  <header>
-    <div>
-      <div id="roomLabel" class="room"></div>
-      <div class="status"><span id="dot" class="dot"></span><span id="statusText">جاري الاتصال…</span></div>
+  <header class="topbar">
+    <button id="leaveBtn" class="icon-btn" aria-label="خروج">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 6l6 6-6 6"/>
+      </svg>
+    </button>
+
+    <div class="room-info">
+      <div class="avatar" id="roomAvatar">#</div>
+      <div style="min-width:0">
+        <div class="room-name" id="roomLabel">#</div>
+        <div class="status"><span id="dot" class="dot"></span><span id="statusText">جاري الاتصال…</span></div>
+      </div>
     </div>
-    <button id="leaveBtn" class="ghost">خروج</button>
   </header>
+
   <main id="messages" class="messages"></main>
+
+  <button id="scrollBtn" class="scroll-btn hidden" aria-label="النزول لآخر رسالة">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14M6 13l6 6 6-6"/>
+    </svg>
+  </button>
+
   <form id="composer" class="composer">
-    <input id="msgInput" placeholder="اكتب رسالة…" autocomplete="off" maxlength="500">
-    <button type="submit" id="sendBtn" aria-label="إرسال">➤</button>
+    <div class="input-wrap">
+      <input id="msgInput" placeholder="اكتب رسالة…" autocomplete="off" maxlength="500" enterkeyhint="send">
+    </div>
+    <button type="submit" id="sendBtn" class="send" aria-label="إرسال">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3.8 11.2l15.4-7.4c.8-.4 1.6.4 1.2 1.2l-7.4 15.4c-.4.8-1.6.6-1.8-.3l-1.4-5.1-5.1-1.4c-.9-.2-1.1-1.4-.3-1.8z"/>
+      </svg>
+    </button>
   </form>
 </div>
 
@@ -125,50 +455,46 @@
 (() => {
   "use strict";
 
-  // ====== إعدادات السيرفر (ntfy.sh مجاني ومفتوح بدون تسجيل) ======
-  const NTFY    = "https://ntfy.sh";
+  /* ================= إعدادات السيرفر ================= */
+  const NTFY    = "https://ntfy.sh";   // سيرفر مجاني مفتوح بدون تسجيل
   const NTFY_WS = "wss://ntfy.sh";
-  const LS_KEY  = "simple_chat_cfg_v1";
+  const LS_KEY  = "md_chat_cfg_v1";
 
-  // ====== عناصر الصفحة ======
+  /* ================= عناصر ================= */
   const $ = s => document.querySelector(s);
-  const loginEl   = $("#login");
-  const chatEl    = $("#chat");
-  const nameInput = $("#nameInput");
-  const roomInput = $("#roomInput");
-  const enterBtn  = $("#enterBtn");
-  const leaveBtn  = $("#leaveBtn");
-  const roomLabel = $("#roomLabel");
-  const dot       = $("#dot");
-  const statusTxt = $("#statusText");
-  const messagesEl= $("#messages");
-  const msgInput  = $("#msgInput");
-  const sendBtn   = $("#sendBtn");
-  const composer  = $("#composer");
+  const loginEl    = $("#login");
+  const chatEl     = $("#chat");
+  const nameInput  = $("#nameInput");
+  const roomInput  = $("#roomInput");
+  const enterBtn   = $("#enterBtn");
+  const leaveBtn   = $("#leaveBtn");
+  const roomLabel  = $("#roomLabel");
+  const roomAvatar = $("#roomAvatar");
+  const dot        = $("#dot");
+  const statusTxt  = $("#statusText");
+  const messagesEl = $("#messages");
+  const msgInput   = $("#msgInput");
+  const sendBtn    = $("#sendBtn");
+  const composer   = $("#composer");
+  const scrollBtn  = $("#scrollBtn");
 
-  // ====== الحالة ======
+  /* ================= الحالة ================= */
   let name = "", room = "";
   let ws = null, retry = 0, reconnectTimer = null, closing = false;
   const seen = new Set();
+  let lastAuthor = null, lastTs = 0, lastDay = null;
 
-  // ====== أدوات ======
+  /* ================= أدوات ================= */
   const esc = s => String(s).replace(/[&<>"']/g, c => (
     { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]
   ));
-
-  // نسمح فقط بالحروف والأرقام و - و _ (شرط مواضيع ntfy)
   const cleanTopic = t => t.trim().replace(/[^A-Za-z0-9_-]/g, "-").slice(0, 64);
-
-  function nearBottom() {
-    return messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 120;
-  }
-  function scrollBottom() {
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  }
+  const nearBottom = () => messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 120;
+  const scrollBottom = () => { messagesEl.scrollTop = messagesEl.scrollHeight; };
 
   function setStatus(on) {
     dot.classList.toggle("on", on);
-    statusTxt.textContent = on ? "متصل" : "غير متصل — بيحاول يعيد الاتصال…";
+    statusTxt.textContent = on ? "متصل الآن" : "جارٍ إعادة الاتصال…";
   }
 
   function addSystem(text) {
@@ -179,33 +505,83 @@
     scrollBottom();
   }
 
-  // ====== عرض رسالة ======
+  function removeEmpty() {
+    const e = messagesEl.querySelector(".empty");
+    if (e) e.remove();
+  }
+
+  function showEmpty() {
+    if (messagesEl.querySelector(".msg")) return;
+    const el = document.createElement("div");
+    el.className = "empty";
+    el.innerHTML =
+      '<div class="empty-ic">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.6L3.8 20.4l1.4-4.2A8.5 8.5 0 1 1 20.5 11.5z"/>' +
+        "</svg>" +
+      "</div>" +
+      "<h3>لا توجد رسائل بعد</h3>" +
+      "<p>ابدأ المحادثة وقل مرحبًا 👋<br>رسائلك ستظهر هنا فورًا للجميع.</p>";
+    messagesEl.appendChild(el);
+  }
+
+  /* ================= فواصل الأيام ================= */
+  function dayKey(ts) {
+    const d = new Date(ts);
+    return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate();
+  }
+  function dayLabel(ts) {
+    const d = new Date(ts), now = new Date();
+    const k = dayKey(ts);
+    if (k === dayKey(now.getTime())) return "اليوم";
+    if (k === dayKey(now.getTime() - 86400000)) return "أمس";
+    return d.toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" });
+  }
+  function ensureDay(ts) {
+    const k = dayKey(ts);
+    if (k === lastDay) return;
+    lastDay = k;
+    lastAuthor = null;
+    const el = document.createElement("div");
+    el.className = "day";
+    el.innerHTML = "<span>" + esc(dayLabel(ts)) + "</span>";
+    messagesEl.appendChild(el);
+  }
+
+  /* ================= عرض رسالة ================= */
   function addMessage(m) {
     if (!m || m.event !== "message" || !m.id) return;
     if (seen.has(m.id)) return;
     seen.add(m.id);
 
-    const mine   = (m.title || "") === name;
     const author = m.title || "مجهول";
+    const mine   = author === name;
     const ts     = (m.time || Math.floor(Date.now() / 1000)) * 1000;
-    const time   = new Date(ts).toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" });
+    const stick  = nearBottom();
 
-    const stick = nearBottom();
+    removeEmpty();
+    ensureDay(ts);
+
+    const grouped = author === lastAuthor && (ts - lastTs) < 5 * 60 * 1000;
+    lastAuthor = author;
+    lastTs = ts;
+
+    const time = new Date(ts).toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" });
 
     const wrap = document.createElement("div");
-    wrap.className = "msg " + (mine ? "mine" : "other");
+    wrap.className = "msg " + (mine ? "mine" : "other") + (grouped ? " grouped" : "");
     wrap.innerHTML =
       '<div class="bubble">' +
-        (mine ? "" : '<div class="author">' + esc(author) + "</div>") +
+        (mine || grouped ? "" : '<div class="author">' + esc(author) + "</div>") +
         '<div class="text">' + esc(m.message || "") + "</div>" +
-        '<div class="time">' + time + "</div>" +
+        '<span class="time">' + time + "</span>" +
       "</div>";
 
     messagesEl.appendChild(wrap);
     if (stick) scrollBottom();
   }
 
-  // ====== تحميل الرسائل القديمة (آخر 12 ساعة) ======
+  /* ================= تحميل آخر 12 ساعة ================= */
   async function loadHistory() {
     try {
       const res = await fetch(
@@ -219,31 +595,26 @@
         try { addMessage(JSON.parse(line)); } catch (_) {}
       });
       scrollBottom();
-    } catch (_) { /* تجاهل */ }
+    } catch (_) {}
+    showEmpty();
   }
 
-  // ====== الاتصال بالـ WebSocket ======
+  /* ================= WebSocket ================= */
   function connect() {
     if (closing) return;
     clearTimeout(reconnectTimer);
-
     try {
       ws = new WebSocket(NTFY_WS + "/" + encodeURIComponent(room) + "/ws");
-    } catch (_) {
-      scheduleReconnect();
-      return;
-    }
+    } catch (_) { scheduleReconnect(); return; }
 
-    ws.onopen = () => { retry = 0; setStatus(true); };
-
+    ws.onopen  = () => { retry = 0; setStatus(true); };
     ws.onmessage = ev => {
       try {
         const data = JSON.parse(ev.data);
         if (data.event === "message") addMessage(data);
-        if (data.event === "open") setStatus(true);
+        if (data.event === "open")    setStatus(true);
       } catch (_) {}
     };
-
     ws.onclose = () => { setStatus(false); scheduleReconnect(); };
     ws.onerror = () => { setStatus(false); };
   }
@@ -255,7 +626,7 @@
     reconnectTimer = setTimeout(connect, delay);
   }
 
-  // ====== إرسال رسالة ======
+  /* ================= إرسال ================= */
   async function sendMessage(text) {
     sendBtn.disabled = true;
     try {
@@ -265,8 +636,8 @@
         body: JSON.stringify({ topic: room, message: text, title: name })
       });
       if (!res.ok) throw new Error("HTTP " + res.status);
-    } catch (e) {
-      addSystem("⚠️ ماقدرتش أرسل الرسالة، جرّب تاني");
+    } catch (_) {
+      addSystem("⚠️ تعذّر إرسال الرسالة، حاول مرة أخرى");
       msgInput.value = text;
     } finally {
       sendBtn.disabled = false;
@@ -274,37 +645,47 @@
     }
   }
 
-  // ====== بدء الشات ======
+  /* ================= بدء الشات ================= */
   function startChat() {
     loginEl.classList.add("hidden");
     chatEl.classList.remove("hidden");
+
     roomLabel.textContent = "# " + room;
+    const ch = (room.match(/[A-Za-z0-9\u0600-\u06FF]/) || [""])[0];
+    roomAvatar.textContent = ch || "#";
+    document.title = room + " · MD Chat";
+
     messagesEl.innerHTML = "";
     seen.clear();
+    lastAuthor = null; lastTs = 0; lastDay = null;
     closing = false;
     setStatus(false);
+    scrollBtn.classList.add("hidden");
 
     loadHistory();
     connect();
-
-    setTimeout(() => msgInput.focus(), 100);
+    setTimeout(() => msgInput.focus(), 120);
   }
 
-  // ====== أحداث ======
+  /* ================= أحداث ================= */
   enterBtn.addEventListener("click", () => {
     name = nameInput.value.trim() || "مستخدم";
     room = cleanTopic(roomInput.value || "");
     if (!room) {
       roomInput.focus();
-      roomInput.style.borderColor = "#ef4444";
+      roomInput.parentElement.classList.add("shake");
+      setTimeout(() => roomInput.parentElement.classList.remove("shake"), 400);
       return;
     }
     localStorage.setItem(LS_KEY, JSON.stringify({ name, room }));
     startChat();
   });
 
+  nameInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); roomInput.focus(); }
+  });
   roomInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") enterBtn.click();
+    if (e.key === "Enter") { e.preventDefault(); enterBtn.click(); }
   });
 
   composer.addEventListener("submit", e => {
@@ -319,12 +700,24 @@
     closing = true;
     clearTimeout(reconnectTimer);
     if (ws) { try { ws.close(); } catch (_) {} ws = null; }
+    document.title = "MD Chat";
     chatEl.classList.add("hidden");
     loginEl.classList.remove("hidden");
     nameInput.focus();
   });
 
-  // استرجاع آخر إعدادات
+  messagesEl.addEventListener("scroll", () => {
+    scrollBtn.classList.toggle("hidden", nearBottom());
+  });
+  scrollBtn.addEventListener("click", scrollBottom);
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && !closing && !chatEl.classList.contains("hidden")) {
+      if (!ws || ws.readyState > 1) { retry = 0; connect(); }
+    }
+  });
+
+  /* ================= استرجاع الإعدادات ================= */
   (() => {
     try {
       const cfg = JSON.parse(localStorage.getItem(LS_KEY) || "null");
@@ -333,15 +726,8 @@
         roomInput.value = cfg.room || "";
       }
     } catch (_) {}
-    nameInput.focus();
+    (nameInput.value ? roomInput : nameInput).focus();
   })();
-
-  // إعادة الاتصال لما الصفحة ترجع للواجهة
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && !closing && chatEl.classList.contains("hidden") === false) {
-      if (!ws || ws.readyState > 1) { retry = 0; connect(); }
-    }
-  });
 })();
 </script>
 </body>
