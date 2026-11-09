@@ -5,27 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="dark" />
-  <meta
-    name="description"
-    content="MD Chat is a text-only, real-time room-based chat demo. No accounts, no media, no API keys."
-  />
+  <meta name="description" content="MD Chat — text and image rooms. No sign-up, no API keys." />
   <title>MD Chat — Real-time rooms</title>
-
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230A84FF'/%3E%3Cpath d='M8.5 11h15v8.5h-9l-6 4.5V11Z' fill='%23fff'/%3E%3C/svg%3E" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
-
   <script type="importmap">
     {
       "imports": {
         "yjs": "https://esm.sh/yjs@13.6.27",
-        "y-websocket": "https://esm.sh/y-websocket@1.5.4?external=yjs"
+        "y-websocket": "https://esm.sh/y-websocket@1.5.4?external=yjs",
+        "y-indexeddb": "https://esm.sh/y-indexeddb@1?external=yjs"
       }
     }
   </script>
@@ -33,17 +25,14 @@
 <body>
   <div class="ambient" aria-hidden="true"></div>
   <div class="noise" aria-hidden="true"></div>
-
   <div id="app" class="app">
-    <!-- ================================================================
-         LANDING
-    ================================================================= -->
+
+    <!-- ==================== LANDING ==================== -->
     <section id="landingScreen" class="landing screen">
       <div class="landing-inner">
         <div class="landing-brand">
           <span class="logo logo-lg" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3"
-              stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
               <path d="M7 11.5A5.5 5.5 0 0 1 12.5 6h17A5.5 5.5 0 0 1 35 11.5v9A5.5 5.5 0 0 1 29.5 26H18l-8 6v-6.2A5.5 5.5 0 0 1 7 20.5v-9Z" />
               <path d="M24 24h9a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-4l-6 4v-4.1A5 5 0 0 1 19 35v-2" opacity=".6" />
               <circle cx="15" cy="16.5" r="1.25" fill="currentColor" stroke="none" />
@@ -59,7 +48,7 @@
 
         <div class="entry-card">
           <div class="entry-head">
-            <span class="eyebrow"><span class="live-dot"></span> Public relay · text only</span>
+            <span class="eyebrow"><span class="live-dot"></span> Public relay · text &amp; images</span>
             <h2>Step into a room</h2>
             <p>Pick a name, choose an avatar, and join the conversation.</p>
           </div>
@@ -68,24 +57,8 @@
             <div class="field">
               <label for="username">Username <span class="req">*</span></label>
               <div class="input-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="8" r="3.7" />
-                  <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
-                </svg>
-                <input
-                  id="username"
-                  class="input"
-                  type="text"
-                  name="username"
-                  placeholder="e.g. nova"
-                  maxlength="20"
-                  autocomplete="nickname"
-                  autocapitalize="none"
-                  spellcheck="false"
-                  required
-                  aria-describedby="usernameError"
-                />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.7" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
+                <input id="username" class="input" type="text" name="username" placeholder="e.g. nova" maxlength="20" autocomplete="nickname" autocapitalize="none" spellcheck="false" required aria-describedby="usernameError" />
               </div>
               <p id="usernameError" class="field-error" role="alert"></p>
             </div>
@@ -93,36 +66,26 @@
             <div class="field">
               <div class="label-row">
                 <span class="label">Avatar</span>
-                <span class="label-hint">Emoji or initial</span>
+                <span class="label-hint">Emoji · Initial · Photo</span>
               </div>
-
               <div class="avatar-stage">
                 <div id="avatarPreview" class="avatar avatar-preview" aria-label="Avatar preview"></div>
-
                 <div class="avatar-controls">
                   <div class="avatar-tabs" role="tablist" aria-label="Avatar style">
-                    <button
-                      type="button"
-                      id="tabEmoji"
-                      class="avatar-tab"
-                      role="tab"
-                      aria-selected="true"
-                      aria-controls="emojiPanel"
-                      data-mode="emoji"
-                    >Emoji</button>
-                    <button
-                      type="button"
-                      id="tabInitial"
-                      class="avatar-tab"
-                      role="tab"
-                      aria-selected="false"
-                      aria-controls="initialPanel"
-                      data-mode="initial"
-                    >Initial</button>
+                    <button type="button" id="tabEmoji" class="avatar-tab" role="tab" aria-selected="true" data-mode="emoji">Emoji</button>
+                    <button type="button" id="tabInitial" class="avatar-tab" role="tab" aria-selected="false" data-mode="initial">Initial</button>
+                    <button type="button" id="tabPhoto" class="avatar-tab" role="tab" aria-selected="false" data-mode="photo">Photo</button>
                   </div>
-
-                  <div id="emojiPanel" class="emoji-grid" role="tabpanel" aria-labelledby="tabEmoji"></div>
-                  <div id="initialPanel" class="color-grid hidden" role="tabpanel" aria-labelledby="tabInitial"></div>
+                  <div id="emojiPanel" class="emoji-grid" role="tabpanel"></div>
+                  <div id="initialPanel" class="color-grid hidden" role="tabpanel"></div>
+                  <div id="photoPanel" class="photo-panel hidden" role="tabpanel">
+                    <label class="photo-drop" id="photoDrop">
+                      <input type="file" id="photoInput" accept="image/*" hidden />
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" /><circle cx="9" cy="9" r="2" /><path d="m21 15-4.5-4.5L9 18" /></svg>
+                      <span>Choose a photo or drop one here</span>
+                    </label>
+                    <button type="button" id="removePhoto" class="link-btn">Remove photo</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -130,26 +93,8 @@
             <div class="field">
               <label for="roomName">Room name <span class="req">*</span></label>
               <div class="input-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M10 3 8 21" />
-                  <path d="M16 3 14 21" />
-                  <path d="M4 9h17" />
-                  <path d="M3 15h17" />
-                </svg>
-                <input
-                  id="roomName"
-                  class="input"
-                  type="text"
-                  name="roomName"
-                  placeholder="e.g. midnight-lobby"
-                  maxlength="30"
-                  autocomplete="off"
-                  autocapitalize="none"
-                  spellcheck="false"
-                  required
-                  aria-describedby="roomHelp roomError"
-                />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 8 21" /><path d="M16 3 14 21" /><path d="M4 9h17" /><path d="M3 15h17" /></svg>
+                <input id="roomName" class="input" type="text" name="roomName" placeholder="e.g. midnight-lobby" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" required aria-describedby="roomHelp roomError" />
               </div>
               <p id="roomHelp" class="helper">Anyone with the same room name will join your chat.</p>
               <p id="roomError" class="field-error" role="alert"></p>
@@ -157,50 +102,31 @@
 
             <button type="submit" id="joinBtn" class="btn btn-primary btn-full">
               <span>Enter Room</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5 12h14" />
-                <path d="m13 6 6 6-6 6" />
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
             </button>
           </form>
 
           <div class="entry-foot">
-            <span>Text only</span>
-            <span class="dot-sep">·</span>
-            <span>Public rooms</span>
-            <span class="dot-sep">·</span>
+            <span>Text &amp; images</span><span class="dot-sep">·</span>
+            <span>Public rooms</span><span class="dot-sep">·</span>
             <button type="button" id="landingAbout" class="link-btn">About &amp; privacy</button>
           </div>
         </div>
-
-        <p class="landing-note">
-          Rooms are public. Anyone who knows the room name can join.
-        </p>
+        <p class="landing-note">Rooms are public. Anyone who knows the room name can join.</p>
       </div>
     </section>
 
-    <!-- ================================================================
-         CHAT
-    ================================================================= -->
+    <!-- ==================== CHAT ==================== -->
     <section id="chatScreen" class="chat-screen screen hidden">
       <aside class="sidebar">
         <div class="sidebar-inner">
           <div class="sidebar-brand">
             <span class="logo logo-sm" aria-hidden="true">
-              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 11.5A5.5 5.5 0 0 1 12.5 6h17A5.5 5.5 0 0 1 35 11.5v9A5.5 5.5 0 0 1 29.5 26H18l-8 6v-6.2A5.5 5.5 0 0 1 7 20.5v-9Z" />
-                <path d="M24 24h9a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-4l-6 4v-4.1A5 5 0 0 1 19 35v-2" opacity=".6" />
-                <circle cx="15" cy="16.5" r="1.25" fill="currentColor" stroke="none" />
-                <circle cx="21" cy="16.5" r="1.25" fill="currentColor" stroke="none" />
-                <circle cx="27" cy="16.5" r="1.25" fill="currentColor" stroke="none" />
-              </svg>
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11.5A5.5 5.5 0 0 1 12.5 6h17A5.5 5.5 0 0 1 35 11.5v9A5.5 5.5 0 0 1 29.5 26H18l-8 6v-6.2A5.5 5.5 0 0 1 7 20.5v-9Z" /><path d="M24 24h9a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-4l-6 4v-4.1A5 5 0 0 1 19 35v-2" opacity=".6" /></svg>
             </span>
             <span class="brand-name">MD Chat</span>
-            <span class="brand-version">v1</span>
+            <span class="brand-version">v2</span>
           </div>
-
           <div class="room-panel">
             <span class="panel-label">Room</span>
             <h2 id="sidebarRoom">—</h2>
@@ -209,42 +135,27 @@
               <span id="sidebarStatusText">Connecting…</span>
             </div>
           </div>
-
           <div class="people-head">
             <span>In this room</span>
             <span id="desktopOnlineCount" class="count-badge">1</span>
           </div>
-
-          <div id="onlineListDesktop" class="online-list" role="list" aria-label="Online users"></div>
-
+          <div id="onlineListDesktop" class="online-list" role="list"></div>
           <div class="sidebar-spacer"></div>
-
-          <div class="sidebar-tip">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.4 7.5 9.5 4.3-1.1 7.5-5 7.5-9.5V6L12 3Z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
-            <p>Messages pass through a public relay. Keep it light.</p>
-          </div>
-
+          <button type="button" id="copyInviteBtn" class="sidebar-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5" /><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.5-1.5" /></svg>
+            Copy invite link
+          </button>
           <div class="sidebar-actions">
+            <button type="button" id="settingsBtn" class="sidebar-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
+              Settings
+            </button>
             <button type="button" id="aboutBtn" class="sidebar-action">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 11v5" />
-                <path d="M12 8h.01" />
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 11v5" /><path d="M12 8h.01" /></svg>
               About &amp; privacy
             </button>
             <button type="button" id="leaveBtn" class="sidebar-action danger">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <path d="m16 17 5-5-5-5" />
-                <path d="M21 12H9" />
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
               Leave room
             </button>
           </div>
@@ -254,53 +165,36 @@
       <main class="chat-main">
         <header class="topbar">
           <button type="button" id="mobileLeave" class="icon-btn mobile-only" aria-label="Leave room">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M19 12H5" />
-              <path d="m11 18-6-6 6-6" />
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
           </button>
-
           <div class="topbar-title">
-            <div class="topbar-room-row">
-              <span class="hash" aria-hidden="true">#</span>
-              <h2 id="topbarRoom">room</h2>
-            </div>
-            <div class="status-line">
-              <span id="topbarStatusDot" class="status-dot connecting"></span>
-              <span id="topbarStatusText">Connecting…</span>
-            </div>
+            <div class="topbar-room-row"><span class="hash">#</span><h2 id="topbarRoom">room</h2></div>
+            <div class="status-line"><span id="topbarStatusDot" class="status-dot connecting"></span><span id="topbarStatusText">Connecting…</span></div>
           </div>
-
-          <button
-            type="button"
-            id="peopleBtn"
-            class="online-chip mobile-only"
-            aria-expanded="false"
-            aria-controls="peoplePopover"
-            aria-label="Show online users"
-          >
-            <span class="live-dot"></span>
-            <span id="mobileOnlineCount">1</span>
-            <span>here</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.9" />
-              <path d="M16 3.1a4 4 0 0 1 0 7.8" />
-            </svg>
+          <button type="button" id="peopleBtn" class="online-chip mobile-only" aria-expanded="false" aria-label="Show online users">
+            <span class="live-dot"></span><span id="mobileOnlineCount">1</span><span>here</span>
           </button>
-
-          <button type="button" id="topbarAbout" class="icon-btn desktop-only" aria-label="About and privacy">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 11v5" />
-              <path d="M12 8h.01" />
-            </svg>
+          <button type="button" id="searchBtn" class="icon-btn" aria-label="Search messages">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          </button>
+          <button type="button" id="topbarSettings" class="icon-btn" aria-label="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
           </button>
         </header>
+
+        <div id="searchBar" class="search-bar hidden">
+          <input id="searchInput" type="text" placeholder="Search messages…" aria-label="Search messages" />
+          <span id="searchCount" class="search-count"></span>
+          <button type="button" id="searchPrev" class="icon-btn small" aria-label="Previous match">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6" /></svg>
+          </button>
+          <button type="button" id="searchNext" class="icon-btn small" aria-label="Next match">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <button type="button" id="searchClose" class="icon-btn small" aria-label="Close search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          </button>
+        </div>
 
         <div id="connectionBanner" class="banner hidden" role="status">
           <span id="bannerText">Connecting to the room…</span>
@@ -309,29 +203,17 @@
 
         <div class="messages-wrap">
           <div id="messageList" class="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
-
           <div id="emptyState" class="empty-state">
             <div class="empty-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.4 9.4 0 0 1-3.2-.7L3 21l1.8-5.2A8.4 8.4 0 1 1 21 11.5Z" />
-                <path d="M8 10h8" />
-                <path d="M8 14h5" />
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.4 9.4 0 0 1-3.2-.7L3 21l1.8-5.2A8.4 8.4 0 1 1 21 11.5Z" /><path d="M8 10h8" /><path d="M8 14h5" /></svg>
             </div>
             <h3 id="emptyTitle">Opening the room…</h3>
             <p id="emptySub">Syncing messages through the public relay.</p>
           </div>
-
           <button type="button" id="jumpLatest" class="jump-latest hidden">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 5v14" />
-              <path d="m19 12-7 7-7-7" />
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="m19 12-7 7-7-7" /></svg>
             <span>Latest</span>
           </button>
-
           <div id="typingBar" class="typing-bar hidden" aria-live="polite">
             <span id="typingText"></span>
             <span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -345,179 +227,151 @@
               <div id="replyText" class="reply-preview-text"></div>
             </div>
             <button type="button" id="cancelReply" class="icon-btn small" aria-label="Cancel reply">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
             </button>
           </div>
 
-          <div class="composer">
-            <button
-              type="button"
-              id="emojiBtn"
-              class="icon-btn"
-              aria-label="Open emoji picker"
-              aria-expanded="false"
-              aria-controls="emojiPicker"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M8.5 14.5a4.5 4.5 0 0 0 7 0" />
-                <path d="M9 9.5h.01" />
-                <path d="M15 9.5h.01" />
-              </svg>
-            </button>
-
-            <textarea
-              id="messageInput"
-              rows="1"
-              maxlength="2000"
-              placeholder="Message the room…"
-              aria-label="Message"
-            ></textarea>
-
-            <button type="button" id="sendBtn" class="send-btn" disabled aria-label="Send message">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m22 2-7 20-4-9-9-4Z" />
-                <path d="M22 2 11 13" />
-              </svg>
+          <div id="editBar" class="reply-preview edit-bar hidden">
+            <div class="reply-preview-main">
+              <div class="reply-preview-label">Editing message</div>
+              <div id="editText" class="reply-preview-text"></div>
+            </div>
+            <button type="button" id="cancelEdit" class="icon-btn small" aria-label="Cancel edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
             </button>
           </div>
 
-          <div class="composer-hint">
-            <span><kbd>Enter</kbd> to send · <kbd>Shift</kbd> + <kbd>Enter</kbd> for a new line</span>
-            <span id="charCount" aria-live="polite"></span>
-          </div>
-
+          <div id="mentionDropdown" class="mention-dropdown hidden" role="listbox"></div>
           <div id="emojiPicker" class="emoji-picker hidden" role="dialog" aria-label="Emoji picker">
             <div class="emoji-picker-label">Emoji</div>
             <div id="emojiPickerGrid" class="emoji-picker-grid"></div>
+          </div>
+
+          <div class="composer">
+            <button type="button" id="emojiBtn" class="icon-btn" aria-label="Open emoji picker" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0" /><path d="M9 9.5h.01" /><path d="M15 9.5h.01" /></svg>
+            </button>
+            <button type="button" id="attachBtn" class="icon-btn" aria-label="Attach image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" /></svg>
+            </button>
+            <input type="file" id="imageInput" accept="image/*" hidden />
+            <textarea id="messageInput" rows="1" maxlength="2000" placeholder="Message the room…" aria-label="Message"></textarea>
+            <button type="button" id="sendBtn" class="send-btn" disabled aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
+            </button>
+          </div>
+          <div class="composer-hint">
+            <span><kbd>Enter</kbd> to send · <kbd>Shift</kbd> + <kbd>Enter</kbd> newline · <kbd>?</kbd> shortcuts</span>
+            <span id="charCount"></span>
           </div>
         </div>
       </main>
 
       <div id="peoplePopover" class="people-popover hidden" role="dialog" aria-label="People in this room">
-        <div class="people-popover-head">
-          <span class="panel-label">In this room</span>
-          <span id="popoverOnlineCount" class="count-badge">1</span>
-        </div>
-        <div id="onlineListMobile" class="online-list" role="list" aria-label="Online users"></div>
+        <div class="people-popover-head"><span class="panel-label">In this room</span><span id="popoverOnlineCount" class="count-badge">1</span></div>
+        <div id="onlineListMobile" class="online-list"></div>
         <div class="popover-actions">
-          <button type="button" id="popoverAbout" class="popover-action">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 11v5" />
-              <path d="M12 8h.01" />
-            </svg>
-            About &amp; privacy
-          </button>
-          <button type="button" id="popoverLeave" class="popover-action danger">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <path d="m16 17 5-5-5-5" />
-              <path d="M21 12H9" />
-            </svg>
-            Leave room
-          </button>
+          <button type="button" id="popoverSettings" class="popover-action">Settings</button>
+          <button type="button" id="popoverAbout" class="popover-action">About &amp; privacy</button>
+          <button type="button" id="popoverLeave" class="popover-action danger">Leave room</button>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- ================================================================
-       ABOUT MODAL
-  ================================================================= -->
-  <dialog id="aboutDialog" class="modal">
+  <!-- ==================== SETTINGS ==================== -->
+  <dialog id="settingsDialog" class="modal modal-wide">
     <div class="modal-head">
-      <span class="logo logo-md" aria-hidden="true">
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 11.5A5.5 5.5 0 0 1 12.5 6h17A5.5 5.5 0 0 1 35 11.5v9A5.5 5.5 0 0 1 29.5 26H18l-8 6v-6.2A5.5 5.5 0 0 1 7 20.5v-9Z" />
-          <path d="M24 24h9a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-4l-6 4v-4.1A5 5 0 0 1 19 35v-2" opacity=".6" />
-        </svg>
-      </span>
-      <div class="modal-title">
-        <h2>About MD Chat</h2>
-        <p>A small, text-only room chat demo.</p>
-      </div>
-      <button type="button" id="closeAbout" class="icon-btn" aria-label="Close about dialog">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
-        </svg>
+      <div class="modal-title"><h2>Settings</h2><p>Stored locally in your browser.</p></div>
+      <button type="button" id="closeSettings" class="icon-btn" aria-label="Close settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
       </button>
     </div>
+    <div class="modal-body settings-body">
+      <section class="settings-section">
+        <h3>Profile</h3>
+        <label class="setting-row"><span>Display name</span><input id="settingName" class="setting-input" type="text" maxlength="20" /></label>
+        <div class="setting-row"><span>Avatar</span><button type="button" id="settingAvatarBtn" class="setting-btn">Change avatar</button></div>
+        <div class="setting-row"><span>Reset profile</span><button type="button" id="resetProfile" class="setting-btn danger">Reset</button></div>
+      </section>
+      <section class="settings-section">
+        <h3>Appearance</h3>
+        <div class="setting-row"><span>Message density</span><select id="settingDensity" class="setting-input"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></div>
+        <div class="setting-row"><span>Font size</span><select id="settingFont" class="setting-input"><option value="small">Small</option><option value="default">Default</option><option value="large">Large</option></select></div>
+        <label class="setting-row"><span>Show timestamps always</span><input type="checkbox" id="settingTimestamps" /></label>
+      </section>
+      <section class="settings-section">
+        <h3>Chat behaviour</h3>
+        <label class="setting-row"><span>Typing indicators</span><input type="checkbox" id="settingTyping" /></label>
+        <label class="setting-row"><span>Read receipts</span><input type="checkbox" id="settingReceipts" /></label>
+        <label class="setting-row"><span>Send on Enter</span><input type="checkbox" id="settingEnterSend" /></label>
+        <label class="setting-row"><span>Auto-scroll</span><input type="checkbox" id="settingAutoScroll" /></label>
+      </section>
+      <section class="settings-section">
+        <h3>Notifications</h3>
+        <label class="setting-row"><span>Sound on new message</span><input type="checkbox" id="settingSound" /></label>
+        <label class="setting-row"><span>Desktop notifications</span><input type="checkbox" id="settingNotify" /></label>
+        <div class="setting-row"><span>Mute this room</span><input type="checkbox" id="settingMute" /></div>
+      </section>
+      <section class="settings-section">
+        <h3>Data</h3>
+        <div class="setting-row"><span>Export transcript</span><div class="setting-group"><button type="button" id="exportTxt" class="setting-btn">.txt</button><button type="button" id="exportJson" class="setting-btn">.json</button></div></div>
+        <div class="setting-row"><span>Clear local cache for this room</span><button type="button" id="clearCache" class="setting-btn danger">Clear</button></div>
+        <div class="setting-row"><span>Reset all settings</span><button type="button" id="resetSettings" class="setting-btn danger">Reset</button></div>
+      </section>
+    </div>
+  </dialog>
 
+  <!-- ==================== ABOUT ==================== -->
+  <dialog id="aboutDialog" class="modal">
+    <div class="modal-head">
+      <span class="logo logo-md" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11.5A5.5 5.5 0 0 1 12.5 6h17A5.5 5.5 0 0 1 35 11.5v9A5.5 5.5 0 0 1 29.5 26H18l-8 6v-6.2A5.5 5.5 0 0 1 7 20.5v-9Z" /><path d="M24 24h9a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-4l-6 4v-4.1A5 5 0 0 1 19 35v-2" opacity=".6" /></svg></span>
+      <div class="modal-title"><h2>About MD Chat</h2><p>A small, text-and-image room chat demo.</p></div>
+      <button type="button" id="closeAbout" class="icon-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+      </button>
+    </div>
     <div class="modal-body">
-      <div class="notice">
-        <span class="notice-title">Disclaimer</span>
-        <p>
-          MD Chat is a demo project. Messages are transmitted through a public WebSocket relay
-          and are not end-to-end encrypted. Do not share sensitive information.
-        </p>
-      </div>
+      <div class="notice"><span class="notice-title">Disclaimer</span><p>MD Chat is a demo project. Messages are transmitted through a public WebSocket relay and are not end-to-end encrypted. Do not share sensitive information.</p></div>
+      <div class="notice"><span class="notice-title">Privacy</span><p>No personal data is stored on a server. Username, avatar, and settings are saved only in your browser’s <code>localStorage</code>. Room history is cached in <code>IndexedDB</code> on your device.</p></div>
+      <div class="notice"><span class="notice-title">Public rooms</span><p>Room names are not passwords. Anyone who knows or guesses the room name can join. Do not use MD Chat for private or sensitive conversations.</p></div>
+      <p class="modal-fine">No accounts, no tracking. Built with Yjs and the public <code>wss://demos.yjs.dev/ws</code> relay. Images are compressed and sent inside the shared document; the relay may reset at any time.</p>
+    </div>
+  </dialog>
 
-      <div class="notice">
-        <span class="notice-title">Privacy</span>
-        <p>
-          No personal data is stored on a server. Username and avatar are saved only in your
-          browser’s <code>localStorage</code>.
-        </p>
-      </div>
+  <!-- ==================== LIGHTBOX ==================== -->
+  <div id="lightbox" class="lightbox hidden" role="dialog" aria-label="Image viewer">
+    <button type="button" id="lightboxClose" class="lightbox-close" aria-label="Close image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+    </button>
+    <img id="lightboxImg" alt="Shared image" />
+    <a id="lightboxDownload" class="lightbox-download" download="mdchat-image.webp">Download</a>
+  </div>
 
-      <div class="notice">
-        <span class="notice-title">Public rooms</span>
-        <p>
-          Room names are not passwords. Anyone who knows or guesses the room name can join,
-          see the messages, and appear in the room. Do not use MD Chat for private or
-          sensitive conversations.
-        </p>
-      </div>
-
-      <p class="modal-fine">
-        No accounts, no tracking, no media uploads. Built with Yjs and the public
-        <code>wss://demos.yjs.dev/ws</code> relay. Rooms are ephemeral and may reset when the
-        relay restarts.
-      </p>
+  <!-- ==================== SHORTCUTS ==================== -->
+  <dialog id="shortcutsDialog" class="modal">
+    <div class="modal-head"><div class="modal-title"><h2>Keyboard shortcuts</h2></div><button type="button" id="closeShortcuts" class="icon-btn" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button></div>
+    <div class="modal-body shortcut-list">
+      <div><kbd>Enter</kbd><span>Send message</span></div>
+      <div><kbd>Shift</kbd> + <kbd>Enter</kbd><span>New line</span></div>
+      <div><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd><span>Search messages</span></div>
+      <div><kbd>?</kbd><span>This panel</span></div>
+      <div><kbd>Esc</kbd><span>Close panels / cancel reply</span></div>
+      <div><kbd>↑</kbd><span>Edit your last message</span></div>
+      <div><kbd>R</kbd><span>Reply to last message</span></div>
     </div>
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
   <div id="fatal" class="fatal hidden">
     <div class="fatal-card">
-      <span class="fatal-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 9v4" />
-          <path d="M12 17h.01" />
-          <path d="M10.3 3.7 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0Z" />
-        </svg>
-      </span>
+      <span class="fatal-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4" /><path d="M12 17h.01" /><path d="M10.3 3.7 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0Z" /></svg></span>
       <h2>Could not load the real-time engine</h2>
-      <p id="fatalDetail">
-        MD Chat relies on a public CDN and WebSocket relay. Check your connection and refresh.
-      </p>
+      <p id="fatalDetail">MD Chat relies on a public CDN and WebSocket relay. Check your connection and refresh.</p>
       <button type="button" class="btn btn-primary" onclick="location.reload()">Refresh page</button>
     </div>
   </div>
-
-  <noscript>
-    <div class="fatal">
-      <div class="fatal-card">
-        <h2>JavaScript is required</h2>
-        <p>MD Chat needs JavaScript and WebSocket support to join a room.</p>
-      </div>
-    </div>
-  </noscript>
-
+  <noscript><div class="fatal"><div class="fatal-card"><h2>JavaScript is required</h2><p>MD Chat needs JavaScript and WebSocket support.</p></div></div></noscript>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
